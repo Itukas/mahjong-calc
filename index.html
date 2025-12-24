@@ -18,9 +18,20 @@
             background-color: var(--bg-color);
             color: var(--primary-color);
             margin: 0;
-            padding: 15px; /* 移动端边距稍微减小 */
+            padding: 15px;
             display: flex;
             justify-content: center;
+
+            /* --- 核心优化开始 --- */
+            
+            /* 1. 禁止浏览器处理双击缩放，消除300ms延迟 */
+            touch-action: manipulation; 
+            
+            /* 2. 禁止长按或双击选中文字 (像原生App一样) */
+            -webkit-user-select: none; 
+            user-select: none;
+            
+            /* --- 核心优化结束 --- */
         }
 
         .container {
@@ -65,12 +76,13 @@
         .radio-group label {
             flex: 1;
             text-align: center;
-            padding: 10px 0;
+            padding: 12px 0; /* 增加点击区域高度 */
             cursor: pointer;
             border-radius: 8px;
-            transition: all 0.2s;
+            transition: all 0.1s; /* 动画加快，感觉更跟手 */
             font-size: 0.9rem;
-            user-select: none;
+            
+            /* 3. 移除移动端点击时的灰色半透明背景 */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -85,11 +97,11 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
 
-        /* --- 新增：步进器样式 (Stepper) --- */
+        /* 步进器样式 */
         .stepper-container {
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 标签和控制器两端对齐 */
+            justify-content: space-between;
         }
 
         .stepper {
@@ -99,28 +111,30 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             overflow: hidden;
-            height: 44px; /* 适合手指点击的高度 */
+            height: 48px; /* 稍微加大高度，更容易点 */
         }
 
         .stepper-btn {
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
             border: none;
-            width: 44px; /* 增大点击区域 */
+            width: 50px; /* 加宽点击区域 */
             height: 100%;
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.4rem; /* 加大符号 */
+            font-weight: 400;
             color: var(--primary-color);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background 0.1s;
+            
+            /* 移除高亮 */
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
+            outline: none;
         }
 
         .stepper-btn:active {
-            background-color: #dcdcdc;
+            background-color: #e2e6ea;
         }
 
         .stepper input {
@@ -129,20 +143,24 @@
             border: none;
             text-align: center;
             font-size: 1.1rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--primary-color);
-            -moz-appearance: textfield; /* 移除默认箭头 */
+            -moz-appearance: textfield;
             padding: 0;
             margin: 0;
+            
+            /* 输入框仍然允许选中，以便修改，但禁止双击缩放 */
+            user-select: text; 
+            -webkit-user-select: text;
         }
-        /* 移除 Chrome/Safari 的默认箭头 */
+
         .stepper input::-webkit-outer-spin-button,
         .stepper input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
 
-        /* 符数详细面板 */
+        /* 符数面板 */
         #fu-calculation-panel {
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -150,11 +168,11 @@
             padding: 15px;
             margin-top: 15px;
             display: none; 
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.2s ease; /* 动画加快 */
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
+            from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -173,12 +191,12 @@
         }
 
         .fu-row label {
-            font-size: 0.9rem;
+            font-size: 0.95rem; /* 字体稍大 */
             color: #555;
-            flex: 1; /* 让文字占据剩余空间 */
+            flex: 1;
         }
 
-        /* Checkbox 样式优化 */
+        /* Checkbox 优化 */
         .checkbox-container {
             display: flex;
             flex-direction: column;
@@ -190,15 +208,18 @@
             display: flex;
             align-items: center;
             background: #fff;
-            padding: 10px;
+            padding: 12px 10px; /* 增加高度 */
             border-radius: 8px;
             border: 1px solid #eee;
+            
+            /* 让整行都能点击 */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .checkbox-row input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
             accent-color: var(--primary-color);
         }
 
@@ -207,33 +228,33 @@
             width: 100%;
             background-color: var(--accent-color);
             color: white;
-            padding: 16px;
-            font-size: 1.1rem;
+            padding: 18px; /* 按钮加大 */
+            font-size: 1.2rem;
             font-weight: bold;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             margin-top: 25px;
-            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.2);
+            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.25);
             transition: transform 0.1s;
             -webkit-tap-highlight-color: transparent;
         }
 
         .btn-calc:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
 
-        /* 结果显示 */
+        /* 结果区域 */
         #result-area {
             margin-top: 25px;
-            padding: 20px;
+            padding: 25px 20px;
             background-color: #ecf0f1;
             border-radius: 12px;
             text-align: center;
         }
 
         .result-points {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 800;
             color: var(--accent-color);
             line-height: 1.2;
@@ -241,7 +262,7 @@
 
         .result-detail {
             margin-top: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #7f8c8d;
         }
         
@@ -294,7 +315,7 @@
         <span class="label-title">番数 (Han)</span>
         <div class="stepper" style="width: 100%; border-color: #bbb;">
             <button class="stepper-btn" onclick="updateValue('han-input', -1)">-</button>
-            <input type="number" id="han-input" min="1" max="13" value="1" style="width: 100%;">
+            <input type="number" id="han-input" min="1" max="13" value="1" style="width: 100%;" readonly>
             <button class="stepper-btn" onclick="updateValue('han-input', 1)">+</button>
         </div>
     </div>
@@ -341,12 +362,12 @@
         </div>
         
         <div class="checkbox-container">
-            <div class="checkbox-row">
-                <input type="checkbox" id="fu-bonus-pair">
+            <div class="checkbox-row" onclick="toggleCheckbox('fu-bonus-pair')">
+                <input type="checkbox" id="fu-bonus-pair" onclick="event.stopPropagation()">
                 <label for="fu-bonus-pair">役牌雀头 (2符)</label>
             </div>
-            <div class="checkbox-row">
-                <input type="checkbox" id="fu-bonus-wait">
+            <div class="checkbox-row" onclick="toggleCheckbox('fu-bonus-wait')">
+                <input type="checkbox" id="fu-bonus-wait" onclick="event.stopPropagation()">
                 <label for="fu-bonus-wait">坎张/边张/单骑听牌 (2符)</label>
             </div>
         </div>
@@ -362,6 +383,14 @@
 </div>
 
 <script>
+    // 辅助：点击整行切换 Checkbox
+    function toggleCheckbox(id) {
+        const checkbox = document.getElementById(id);
+        checkbox.checked = !checkbox.checked;
+        // 手动触发 change 事件
+        checkbox.dispatchEvent(new Event('change'));
+    }
+
     // 通用：更新输入框数值
     function updateValue(inputId, change) {
         const input = document.getElementById(inputId);
@@ -371,27 +400,21 @@
         // 限制条件
         if (inputId === 'han-input') {
             if (newVal < 1) newVal = 1;
-            if (newVal > 13) newVal = 13; // 理论上限
+            if (newVal > 13) newVal = 13; 
         } else {
-            // 对于刻子数量，限制在 0 到 4 之间
             if (newVal < 0) newVal = 0;
             if (newVal > 4) newVal = 4;
         }
 
         input.value = newVal;
-        
-        // 手动触发 input 事件以便监听器能捕获
-        const event = new Event('input');
-        input.dispatchEvent(event);
+        input.dispatchEvent(new Event('input'));
     }
 
-    /* 以下逻辑保持原样，仅做少量适配 */
-    
+    /* 逻辑层 */
     const hanInput = document.getElementById('han-input');
     const fuPanel = document.getElementById('fu-calculation-panel');
     const fuDisplay = document.getElementById('fu-display');
     
-    // 监听番数变化
     hanInput.addEventListener('input', function() {
         const han = parseInt(this.value) || 0;
         if (han < 5 && han > 0) {
@@ -402,15 +425,12 @@
         }
     });
 
-    // 监听所有符数输入
     const fuInputs = document.querySelectorAll('#fu-calculation-panel input');
     fuInputs.forEach(input => {
-        // 使用 click 和 change 确保覆盖所有交互
         input.addEventListener('change', updateFuPreview);
         input.addEventListener('input', updateFuPreview);
     });
 
-    // 监听 Checkbox 变化
     document.getElementById('fu-bonus-pair').addEventListener('change', updateFuPreview);
     document.getElementById('fu-bonus-wait').addEventListener('change', updateFuPreview);
 
@@ -418,13 +438,10 @@
         radio.addEventListener('change', updateFuPreview);
     });
 
-    // 计算符数
     function calculateFu() {
         const winType = document.querySelector('input[name="winType"]:checked').value;
-        
-        let fu = 20; // 底符
+        let fu = 20;
 
-        // 刻子加分
         const openSimple = parseInt(document.getElementById('triplet-open-simple').value) || 0;
         const closedSimple = parseInt(document.getElementById('triplet-closed-simple').value) || 0;
         const openTerminal = parseInt(document.getElementById('triplet-open-terminal').value) || 0;
@@ -435,21 +452,17 @@
         fu += openTerminal * 4;
         fu += closedTerminal * 8;
 
-        // 雀头和听牌
         if(document.getElementById('fu-bonus-pair').checked) fu += 2;
         if(document.getElementById('fu-bonus-wait').checked) fu += 2;
 
-        // 赢牌方式符
         if (winType === 'tsumo') {
             fu += 2; 
         } else {
-            // 荣和特例逻辑 (简化版)
             if (openSimple === 0 && openTerminal === 0) {
-                fu += 10; // 假设门清
+                fu += 10;
             }
         }
 
-        // 进位处理
         if (fu % 10 !== 0) {
             fu = Math.ceil(fu / 10) * 10;
         }
@@ -460,7 +473,6 @@
     }
 
     function updateFuPreview() {
-        // 只有在番数小于5时才真正需要关心符数预览
         const han = parseInt(hanInput.value) || 0;
         if (han < 5) {
             const fu = calculateFu();
@@ -468,7 +480,6 @@
         }
     }
 
-    // 计算总分
     function calculateScore() {
         const han = parseInt(hanInput.value) || 0;
         const isDealer = document.querySelector('input[name="role"]:checked').value === 'dealer';
@@ -480,7 +491,6 @@
         let text = "";
         let subText = "";
 
-        // 1. 基本点
         if (han >= 5) {
             if (han === 5) basicPoints = 2000;
             else if (han >= 6 && han <= 7) basicPoints = 3000;
@@ -493,7 +503,6 @@
             if (basicPoints > 2000) basicPoints = 2000;
         }
 
-        // 2. 支付
         if (winType === 'ron') {
             if (isDealer) {
                 finalPoints = Math.ceil((basicPoints * 6) / 100) * 100;
@@ -532,7 +541,6 @@
         else if (basicPoints >= 3000) title = "【跳满】";
         else if (basicPoints >= 2000) title = "【满贯】";
 
-        // 滚动到结果区
         const resultArea = document.getElementById('result-area');
         resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -543,7 +551,6 @@
         `;
     }
 
-    // 初始化
     if(hanInput.value < 5) {
         fuPanel.style.display = 'block';
     }
