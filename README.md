@@ -49,13 +49,6 @@
 
 * `index.html`: 包含所有的 HTML 结构、CSS 样式和 JavaScript 逻辑。
 
-## 🎨 界面预览
-
-
-| 符数输入 | 计算结果 |
-|:---:|:---:|
-| ![Screenshot1](https://via.placeholder.com/300x600?text=Input+Screen) | ![Screenshot2](https://via.placeholder.com/300x600?text=Result+Screen) |
-
 ## 📄 开源协议
 
 MIT License
