@@ -31,7 +31,7 @@
 
 1.  克隆或下载本仓库：
     ```bash
-    git clone [https://github.com/你的用户名/你的仓库名.git](https://github.com/你的用户名/你的仓库名.git)
+    git clone https://github.com/Itukas/mahjong-calc.git
     ```
 2.  进入文件夹，双击打开 `index.html`。
 3.  或者在手机上通过文件管理器打开。
