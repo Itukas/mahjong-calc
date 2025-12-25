@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>日麻点数计算器 (移动版)</title>
+    <title>日麻点数计算器 (实时版)</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -24,6 +24,7 @@
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
+            padding-bottom: 50px; /* 底部留白 */
         }
 
         .container {
@@ -166,7 +167,7 @@
             margin-bottom: 12px;
             padding-bottom: 8px;
             border-bottom: 1px dashed #e0e0e0;
-            transition: opacity 0.3s; /* 添加过渡效果 */
+            transition: opacity 0.3s;
         }
 
         .fu-row:last-child {
@@ -185,7 +186,7 @@
             flex-direction: column;
             gap: 12px;
             margin-top: 15px;
-            transition: opacity 0.3s; /* 添加过渡效果 */
+            transition: opacity 0.3s;
         }
 
         .checkbox-row {
@@ -199,7 +200,6 @@
             cursor: pointer;
         }
 
-        /* 特殊样式：七对子高亮 */
         .checkbox-row.special-row {
             background-color: #fff8e1;
             border-color: #ffe082;
@@ -217,32 +217,14 @@
             accent-color: var(--primary-color);
         }
 
-        .btn-calc {
-            width: 100%;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 18px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            margin-top: 25px;
-            box-shadow: 0 4px 6px rgba(231, 76, 60, 0.25);
-            transition: transform 0.1s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-calc:active {
-            transform: scale(0.96);
-        }
-
         #result-area {
             margin-top: 25px;
             padding: 25px 20px;
             background-color: #ecf0f1;
             border-radius: 12px;
             text-align: center;
+            /* 添加过渡动画，让数字变化更平滑 */
+            transition: background-color 0.3s;
         }
 
         .result-points {
@@ -266,7 +248,6 @@
             font-weight: 500;
         }
 
-        /* 禁用状态样式 */
         .disabled-area {
             opacity: 0.4;
             pointer-events: none;
@@ -277,7 +258,7 @@
 <body>
 
 <div class="container">
-    <h1>🀄 日麻点数计算器</h1>
+    <h1>🀄 日麻点数计算器 (实时)</h1>
 
     <div class="control-group">
         <span class="label-title">人数</span>
@@ -379,13 +360,12 @@
             </div>
         </div>
 
-        <div class="fu-summary" id="fu-display">当前预估: 20符 (底符)</div>
+        <div class="fu-summary" id="fu-display">当前预估: 30符</div>
     </div>
 
-    <button class="btn-calc" onclick="calculateScore()">开始计算</button>
-
     <div id="result-area">
-        <div class="result-detail">设置番数和条件以开始</div>
+        <div class="result-points">--</div>
+        <div class="result-detail">正在计算...</div>
     </div>
 </div>
 
@@ -399,9 +379,9 @@
 
     // 通用：更新输入框数值
     function updateValue(inputId, change) {
-        // 如果处于禁用状态，不响应点击
         if (document.getElementById('normal-fu-area').classList.contains('disabled-area')) {
-            return;
+            // 如果被禁用（七对子模式），只允许修改 han-input
+            if (inputId !== 'han-input') return;
         }
 
         const input = document.getElementById(inputId);
@@ -427,46 +407,51 @@
     const normalFuArea = document.getElementById('normal-fu-area');
     const chitoitsuCheck = document.getElementById('fu-chitoitsu');
 
-    // 监听番数变化，控制面板显示
-    hanInput.addEventListener('input', function() {
-        const han = parseInt(this.value) || 0;
+    // 1. 绑定所有事件以实现实时计算
+    const allInputs = document.querySelectorAll('input');
+    allInputs.forEach(input => {
+        // 监听 change 和 input，确保涵盖所有交互方式
+        input.addEventListener('change', () => {
+            handleLogicChange();
+            calculateScore();
+        });
+        input.addEventListener('input', () => {
+            handleLogicChange();
+            calculateScore();
+        });
+    });
+
+    // 逻辑状态处理（控制面板显示/禁用）
+    function handleLogicChange() {
+        const han = parseInt(hanInput.value) || 0;
+
+        // 控制符数面板显示
         if (han < 5 && han > 0) {
             fuPanel.style.display = 'block';
-            updateFuPreview();
         } else {
             fuPanel.style.display = 'none';
         }
-    });
 
-    // 监听七对子开关
-    chitoitsuCheck.addEventListener('change', function() {
-        if(this.checked) {
-            // 选中时，禁用并置灰其他符数选项
+        // 控制七对子互斥
+        if(chitoitsuCheck.checked) {
             normalFuArea.classList.add('disabled-area');
         } else {
-            // 取消选中时，恢复
             normalFuArea.classList.remove('disabled-area');
         }
-        updateFuPreview();
-    });
 
-    const fuInputs = document.querySelectorAll('#normal-fu-area input');
-    fuInputs.forEach(input => {
-        input.addEventListener('change', updateFuPreview);
-        input.addEventListener('input', updateFuPreview);
-    });
-
-    document.querySelectorAll('input[name="winType"]').forEach(radio => {
-        radio.addEventListener('change', updateFuPreview);
-    });
+        // 更新符数小预览
+        if (han < 5) {
+            const fu = calculateFu();
+            let text = `当前计算: ${fu} 符`;
+            if (chitoitsuCheck.checked) text += " (七对子)";
+            fuDisplay.innerText = text;
+        }
+    }
 
     function calculateFu() {
-        // 1. 如果是七对子，直接返回25符（固定）
-        if (document.getElementById('fu-chitoitsu').checked) {
-            return 25;
-        }
+        // 七对子固定 25 符
+        if (chitoitsuCheck.checked) return 25;
 
-        // 2. 否则进行常规计算
         const winType = document.querySelector('input[name="winType"]:checked').value;
         let fu = 20; // 底符
 
@@ -484,40 +469,23 @@
         if(document.getElementById('fu-bonus-wait').checked) fu += 2;
 
         if (winType === 'tsumo') {
-            fu += 2; // 自摸 +2
+            fu += 2;
         } else {
-            // 门清荣和 +10 (这里简化逻辑：只要没有明刻就认为是门清，实际情况可能更复杂，但在简单计算器中通常通过无明刻来推断，或者用户如果不门清不会填这些)
-            // 修正逻辑：由于此计算器无法知道是否吃碰（顺子），我们假设如果所有刻子都是暗刻，可能有门清。
-            // 但为了严谨，通常如果用户已经在算符，我们只给底符20。
-            // 按照日麻规则，门清荣和是30符起，非门清是20符起(但必须有副露，否则不能胡)。
-            // 简单处理：如果有明刻，不加10；如果全是暗刻且无明刻，加10。
+            // 简单判定门清加符（无明刻）
             if (openSimple === 0 && openTerminal === 0) {
                 fu += 10;
             }
         }
 
-        // 进位取整 (Ceil to next 10)
+        // 进位取整
         if (fu % 10 !== 0) {
             fu = Math.ceil(fu / 10) * 10;
         }
 
-        // 荣和最小30符 (特例：平和荣和是30符，这里逻辑覆盖了)
-        // 唯一的例外是鸣牌后的20符荣和（形式听牌等），但在标准规则里通常记30符。
-        // 平和自摸是20符，七对子25符。
+        // 荣和最小30符
         if (winType === 'ron' && fu < 30) fu = 30;
 
         return fu;
-    }
-
-    function updateFuPreview() {
-        const han = parseInt(hanInput.value) || 0;
-        if (han < 5) {
-            const fu = calculateFu();
-            fuDisplay.innerText = `当前计算: ${fu} 符`;
-            if (document.getElementById('fu-chitoitsu').checked) {
-                fuDisplay.innerText += " (七对子特例)";
-            }
-        }
     }
 
     function calculateScore() {
@@ -532,20 +500,18 @@
         let subText = "";
 
         if (han >= 5) {
-            // 满贯以上，不看符数
             if (han === 5) basicPoints = 2000;
             else if (han >= 6 && han <= 7) basicPoints = 3000;
             else if (han >= 8 && han <= 10) basicPoints = 4000;
             else if (han >= 11 && han <= 12) basicPoints = 6000;
             else if (han >= 13) basicPoints = 8000;
         } else {
-            // 满贯以下，利用公式
             let fu = calculateFu();
             basicPoints = fu * Math.pow(2, 2 + han);
-            if (basicPoints > 2000) basicPoints = 2000; // 满贯限制
+            if (basicPoints > 2000) basicPoints = 2000;
         }
 
-        // 计算支付点数
+        // 计算点数支付
         if (winType === 'ron') {
             if (isDealer) {
                 finalPoints = Math.ceil((basicPoints * 6) / 100) * 100;
@@ -584,20 +550,25 @@
         else if (basicPoints >= 3000) title = "【跳满】";
         else if (basicPoints >= 2000) title = "【满贯】";
 
+        // 更新 UI
         const resultArea = document.getElementById('result-area');
-        resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // 注意：这里移除了 scrollIntoView，避免实时计算时页面乱跳
+
+        let fuText = "";
+        if (han < 5) {
+            fuText = `<div style="margin-top:8px; font-size:0.8rem; opacity:0.7">(${calculateFu()}符 ${han}番)</div>`;
+        }
 
         resultArea.innerHTML = `
             <div class="result-points">${title} ${text}</div>
             <div class="result-detail">${subText}</div>
-            ${han < 5 ? `<div style="margin-top:8px; font-size:0.8rem; opacity:0.7">(${calculateFu()}符 ${han}番)</div>` : ''}
+            ${fuText}
         `;
     }
 
-    // 初始化检查
-    if(hanInput.value < 5) {
-        fuPanel.style.display = 'block';
-    }
+    // 初始化：页面加载后立即计算一次默认值
+    handleLogicChange();
+    calculateScore();
 </script>
 
 </body>
