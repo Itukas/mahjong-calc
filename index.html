@@ -21,17 +21,9 @@
             padding: 15px;
             display: flex;
             justify-content: center;
-
-            /* --- 核心优化开始 --- */
-            
-            /* 1. 禁止浏览器处理双击缩放，消除300ms延迟 */
-            touch-action: manipulation; 
-            
-            /* 2. 禁止长按或双击选中文字 (像原生App一样) */
-            -webkit-user-select: none; 
+            touch-action: manipulation;
+            -webkit-user-select: none;
             user-select: none;
-            
-            /* --- 核心优化结束 --- */
         }
 
         .container {
@@ -64,7 +56,6 @@
             color: #34495e;
         }
 
-        /* 按钮组样式 (Radio) */
         .radio-group {
             display: flex;
             gap: 8px;
@@ -76,13 +67,11 @@
         .radio-group label {
             flex: 1;
             text-align: center;
-            padding: 12px 0; /* 增加点击区域高度 */
+            padding: 12px 0;
             cursor: pointer;
             border-radius: 8px;
-            transition: all 0.1s; /* 动画加快，感觉更跟手 */
+            transition: all 0.1s;
             font-size: 0.9rem;
-            
-            /* 3. 移除移动端点击时的灰色半透明背景 */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -97,7 +86,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
 
-        /* 步进器样式 */
         .stepper-container {
             display: flex;
             align-items: center;
@@ -111,15 +99,15 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             overflow: hidden;
-            height: 48px; /* 稍微加大高度，更容易点 */
+            height: 48px;
         }
 
         .stepper-btn {
             background-color: #f8f9fa;
             border: none;
-            width: 50px; /* 加宽点击区域 */
+            width: 50px;
             height: 100%;
-            font-size: 1.4rem; /* 加大符号 */
+            font-size: 1.4rem;
             font-weight: 400;
             color: var(--primary-color);
             cursor: pointer;
@@ -127,8 +115,6 @@
             align-items: center;
             justify-content: center;
             transition: background 0.1s;
-            
-            /* 移除高亮 */
             -webkit-tap-highlight-color: transparent;
             outline: none;
         }
@@ -148,9 +134,7 @@
             -moz-appearance: textfield;
             padding: 0;
             margin: 0;
-            
-            /* 输入框仍然允许选中，以便修改，但禁止双击缩放 */
-            user-select: text; 
+            user-select: text;
             -webkit-user-select: text;
         }
 
@@ -160,17 +144,16 @@
             margin: 0;
         }
 
-        /* 符数面板 */
         #fu-calculation-panel {
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
             border-radius: 12px;
             padding: 15px;
             margin-top: 15px;
-            display: none; 
-            animation: fadeIn 0.2s ease; /* 动画加快 */
+            display: none;
+            animation: fadeIn 0.2s ease;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
@@ -183,6 +166,7 @@
             margin-bottom: 12px;
             padding-bottom: 8px;
             border-bottom: 1px dashed #e0e0e0;
+            transition: opacity 0.3s; /* 添加过渡效果 */
         }
 
         .fu-row:last-child {
@@ -191,29 +175,39 @@
         }
 
         .fu-row label {
-            font-size: 0.95rem; /* 字体稍大 */
+            font-size: 0.95rem;
             color: #555;
             flex: 1;
         }
 
-        /* Checkbox 优化 */
         .checkbox-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-top: 15px;
+            transition: opacity 0.3s; /* 添加过渡效果 */
         }
 
         .checkbox-row {
             display: flex;
             align-items: center;
             background: #fff;
-            padding: 12px 10px; /* 增加高度 */
+            padding: 12px 10px;
             border-radius: 8px;
             border: 1px solid #eee;
-            
-            /* 让整行都能点击 */
             -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+        }
+
+        /* 特殊样式：七对子高亮 */
+        .checkbox-row.special-row {
+            background-color: #fff8e1;
+            border-color: #ffe082;
+        }
+
+        .checkbox-row.special-row input:checked + label {
+            font-weight: bold;
+            color: #d35400;
         }
 
         .checkbox-row input[type="checkbox"] {
@@ -223,12 +217,11 @@
             accent-color: var(--primary-color);
         }
 
-        /* 计算按钮 */
         .btn-calc {
             width: 100%;
             background-color: var(--accent-color);
             color: white;
-            padding: 18px; /* 按钮加大 */
+            padding: 18px;
             font-size: 1.2rem;
             font-weight: bold;
             border: none;
@@ -244,7 +237,6 @@
             transform: scale(0.96);
         }
 
-        /* 结果区域 */
         #result-area {
             margin-top: 25px;
             padding: 25px 20px;
@@ -265,13 +257,19 @@
             font-size: 1rem;
             color: #7f8c8d;
         }
-        
+
         .fu-summary {
             font-size: 0.85rem;
             color: #666;
             text-align: right;
             margin-top: 5px;
             font-weight: 500;
+        }
+
+        /* 禁用状态样式 */
+        .disabled-area {
+            opacity: 0.4;
+            pointer-events: none;
         }
 
     </style>
@@ -324,54 +322,63 @@
         <div class="label-title" style="border-bottom: 1px solid #ddd; margin-bottom: 15px; padding-bottom:5px;">
             符数详情 (Fu)
         </div>
-        
-        <div class="fu-row">
-            <label>明刻 (中张 2符)</label>
-            <div class="stepper">
-                <button class="stepper-btn" onclick="updateValue('triplet-open-simple', -1)">-</button>
-                <input type="number" id="triplet-open-simple" value="0" readonly>
-                <button class="stepper-btn" onclick="updateValue('triplet-open-simple', 1)">+</button>
+
+        <div class="checkbox-container" style="margin-top: 0; margin-bottom: 15px;">
+            <div class="checkbox-row special-row" onclick="toggleCheckbox('fu-chitoitsu')">
+                <input type="checkbox" id="fu-chitoitsu" onclick="event.stopPropagation()">
+                <label for="fu-chitoitsu">七对子 (固定25符)</label>
             </div>
         </div>
 
-        <div class="fu-row">
-            <label>暗刻 (中张 4符)</label>
-            <div class="stepper">
-                <button class="stepper-btn" onclick="updateValue('triplet-closed-simple', -1)">-</button>
-                <input type="number" id="triplet-closed-simple" value="0" readonly>
-                <button class="stepper-btn" onclick="updateValue('triplet-closed-simple', 1)">+</button>
+        <div id="normal-fu-area">
+            <div class="fu-row">
+                <label>明刻 (中张 2符)</label>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="updateValue('triplet-open-simple', -1)">-</button>
+                    <input type="number" id="triplet-open-simple" value="0" readonly>
+                    <button class="stepper-btn" onclick="updateValue('triplet-open-simple', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="fu-row">
+                <label>暗刻 (中张 4符)</label>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="updateValue('triplet-closed-simple', -1)">-</button>
+                    <input type="number" id="triplet-closed-simple" value="0" readonly>
+                    <button class="stepper-btn" onclick="updateValue('triplet-closed-simple', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="fu-row">
+                <label>幺九/字 明刻 (4符)</label>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="updateValue('triplet-open-terminal', -1)">-</button>
+                    <input type="number" id="triplet-open-terminal" value="0" readonly>
+                    <button class="stepper-btn" onclick="updateValue('triplet-open-terminal', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="fu-row">
+                <label>幺九/字 暗刻 (8符)</label>
+                <div class="stepper">
+                    <button class="stepper-btn" onclick="updateValue('triplet-closed-terminal', -1)">-</button>
+                    <input type="number" id="triplet-closed-terminal" value="0" readonly>
+                    <button class="stepper-btn" onclick="updateValue('triplet-closed-terminal', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="checkbox-container">
+                <div class="checkbox-row" onclick="toggleCheckbox('fu-bonus-pair')">
+                    <input type="checkbox" id="fu-bonus-pair" onclick="event.stopPropagation()">
+                    <label for="fu-bonus-pair">役牌雀头 (2符)</label>
+                </div>
+                <div class="checkbox-row" onclick="toggleCheckbox('fu-bonus-wait')">
+                    <input type="checkbox" id="fu-bonus-wait" onclick="event.stopPropagation()">
+                    <label for="fu-bonus-wait">坎张/边张/单骑听牌 (2符)</label>
+                </div>
             </div>
         </div>
 
-        <div class="fu-row">
-            <label>幺九/字 明刻 (4符)</label>
-            <div class="stepper">
-                <button class="stepper-btn" onclick="updateValue('triplet-open-terminal', -1)">-</button>
-                <input type="number" id="triplet-open-terminal" value="0" readonly>
-                <button class="stepper-btn" onclick="updateValue('triplet-open-terminal', 1)">+</button>
-            </div>
-        </div>
-
-        <div class="fu-row">
-            <label>幺九/字 暗刻 (8符)</label>
-            <div class="stepper">
-                <button class="stepper-btn" onclick="updateValue('triplet-closed-terminal', -1)">-</button>
-                <input type="number" id="triplet-closed-terminal" value="0" readonly>
-                <button class="stepper-btn" onclick="updateValue('triplet-closed-terminal', 1)">+</button>
-            </div>
-        </div>
-        
-        <div class="checkbox-container">
-            <div class="checkbox-row" onclick="toggleCheckbox('fu-bonus-pair')">
-                <input type="checkbox" id="fu-bonus-pair" onclick="event.stopPropagation()">
-                <label for="fu-bonus-pair">役牌雀头 (2符)</label>
-            </div>
-            <div class="checkbox-row" onclick="toggleCheckbox('fu-bonus-wait')">
-                <input type="checkbox" id="fu-bonus-wait" onclick="event.stopPropagation()">
-                <label for="fu-bonus-wait">坎张/边张/单骑听牌 (2符)</label>
-            </div>
-        </div>
-        
         <div class="fu-summary" id="fu-display">当前预估: 20符 (底符)</div>
     </div>
 
@@ -387,20 +394,23 @@
     function toggleCheckbox(id) {
         const checkbox = document.getElementById(id);
         checkbox.checked = !checkbox.checked;
-        // 手动触发 change 事件
         checkbox.dispatchEvent(new Event('change'));
     }
 
     // 通用：更新输入框数值
     function updateValue(inputId, change) {
+        // 如果处于禁用状态，不响应点击
+        if (document.getElementById('normal-fu-area').classList.contains('disabled-area')) {
+            return;
+        }
+
         const input = document.getElementById(inputId);
         let currentVal = parseInt(input.value) || 0;
         let newVal = currentVal + change;
-        
-        // 限制条件
+
         if (inputId === 'han-input') {
             if (newVal < 1) newVal = 1;
-            if (newVal > 13) newVal = 13; 
+            if (newVal > 13) newVal = 13;
         } else {
             if (newVal < 0) newVal = 0;
             if (newVal > 4) newVal = 4;
@@ -414,7 +424,10 @@
     const hanInput = document.getElementById('han-input');
     const fuPanel = document.getElementById('fu-calculation-panel');
     const fuDisplay = document.getElementById('fu-display');
-    
+    const normalFuArea = document.getElementById('normal-fu-area');
+    const chitoitsuCheck = document.getElementById('fu-chitoitsu');
+
+    // 监听番数变化，控制面板显示
     hanInput.addEventListener('input', function() {
         const han = parseInt(this.value) || 0;
         if (han < 5 && han > 0) {
@@ -425,22 +438,37 @@
         }
     });
 
-    const fuInputs = document.querySelectorAll('#fu-calculation-panel input');
+    // 监听七对子开关
+    chitoitsuCheck.addEventListener('change', function() {
+        if(this.checked) {
+            // 选中时，禁用并置灰其他符数选项
+            normalFuArea.classList.add('disabled-area');
+        } else {
+            // 取消选中时，恢复
+            normalFuArea.classList.remove('disabled-area');
+        }
+        updateFuPreview();
+    });
+
+    const fuInputs = document.querySelectorAll('#normal-fu-area input');
     fuInputs.forEach(input => {
         input.addEventListener('change', updateFuPreview);
         input.addEventListener('input', updateFuPreview);
     });
-
-    document.getElementById('fu-bonus-pair').addEventListener('change', updateFuPreview);
-    document.getElementById('fu-bonus-wait').addEventListener('change', updateFuPreview);
 
     document.querySelectorAll('input[name="winType"]').forEach(radio => {
         radio.addEventListener('change', updateFuPreview);
     });
 
     function calculateFu() {
+        // 1. 如果是七对子，直接返回25符（固定）
+        if (document.getElementById('fu-chitoitsu').checked) {
+            return 25;
+        }
+
+        // 2. 否则进行常规计算
         const winType = document.querySelector('input[name="winType"]:checked').value;
-        let fu = 20;
+        let fu = 20; // 底符
 
         const openSimple = parseInt(document.getElementById('triplet-open-simple').value) || 0;
         const closedSimple = parseInt(document.getElementById('triplet-closed-simple').value) || 0;
@@ -456,17 +484,26 @@
         if(document.getElementById('fu-bonus-wait').checked) fu += 2;
 
         if (winType === 'tsumo') {
-            fu += 2; 
+            fu += 2; // 自摸 +2
         } else {
+            // 门清荣和 +10 (这里简化逻辑：只要没有明刻就认为是门清，实际情况可能更复杂，但在简单计算器中通常通过无明刻来推断，或者用户如果不门清不会填这些)
+            // 修正逻辑：由于此计算器无法知道是否吃碰（顺子），我们假设如果所有刻子都是暗刻，可能有门清。
+            // 但为了严谨，通常如果用户已经在算符，我们只给底符20。
+            // 按照日麻规则，门清荣和是30符起，非门清是20符起(但必须有副露，否则不能胡)。
+            // 简单处理：如果有明刻，不加10；如果全是暗刻且无明刻，加10。
             if (openSimple === 0 && openTerminal === 0) {
                 fu += 10;
             }
         }
 
+        // 进位取整 (Ceil to next 10)
         if (fu % 10 !== 0) {
             fu = Math.ceil(fu / 10) * 10;
         }
-        
+
+        // 荣和最小30符 (特例：平和荣和是30符，这里逻辑覆盖了)
+        // 唯一的例外是鸣牌后的20符荣和（形式听牌等），但在标准规则里通常记30符。
+        // 平和自摸是20符，七对子25符。
         if (winType === 'ron' && fu < 30) fu = 30;
 
         return fu;
@@ -477,6 +514,9 @@
         if (han < 5) {
             const fu = calculateFu();
             fuDisplay.innerText = `当前计算: ${fu} 符`;
+            if (document.getElementById('fu-chitoitsu').checked) {
+                fuDisplay.innerText += " (七对子特例)";
+            }
         }
     }
 
@@ -485,24 +525,27 @@
         const isDealer = document.querySelector('input[name="role"]:checked').value === 'dealer';
         const winType = document.querySelector('input[name="winType"]:checked').value;
         const isSanma = document.querySelector('input[name="gameMode"]:checked').value === '3';
-        
+
         let basicPoints = 0;
         let finalPoints = 0;
         let text = "";
         let subText = "";
 
         if (han >= 5) {
+            // 满贯以上，不看符数
             if (han === 5) basicPoints = 2000;
             else if (han >= 6 && han <= 7) basicPoints = 3000;
             else if (han >= 8 && han <= 10) basicPoints = 4000;
             else if (han >= 11 && han <= 12) basicPoints = 6000;
             else if (han >= 13) basicPoints = 8000;
         } else {
+            // 满贯以下，利用公式
             let fu = calculateFu();
             basicPoints = fu * Math.pow(2, 2 + han);
-            if (basicPoints > 2000) basicPoints = 2000;
+            if (basicPoints > 2000) basicPoints = 2000; // 满贯限制
         }
 
+        // 计算支付点数
         if (winType === 'ron') {
             if (isDealer) {
                 finalPoints = Math.ceil((basicPoints * 6) / 100) * 100;
@@ -533,7 +576,7 @@
                 subText = `庄家 ${paymentDealer} / 闲家 ${paymentKo}`;
             }
         }
-        
+
         let title = "";
         if (basicPoints >= 8000) title = "【役满】";
         else if (basicPoints >= 6000) title = "【三倍满】";
@@ -551,6 +594,7 @@
         `;
     }
 
+    // 初始化检查
     if(hanInput.value < 5) {
         fuPanel.style.display = 'block';
     }
